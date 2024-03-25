@@ -39,9 +39,9 @@
         <table class="table table-striped" id="studentTable">
             <thead>
                 <tr>
-                    <th scope="col" id="nimHeader">NIM<span class="sort-icon">▲▼</span></th>
-                    <th scope="col" id="namaHeader">Nama<span class="sort-icon">▲▼</span></th>
-                    <th scope="col" id="alamatHeader">Alamat<span class="sort-icon">▲▼</span></th>
+                    <th scope="col" id="nimHeader" onclick="sortTable(0, 'studentTable')">NIM<span class="sort-icon">▲▼</span></th>
+                    <th scope="col" id="namaHeader" onclick="sortTable(1, 'studentTable')">Nama<span class="sort-icon">▲▼</span></th>
+                    <th scope="col" id="alamatHeader" onclick="sortTable(2, 'studentTable')">Alamat<span class="sort-icon">▲▼</span></th>
                     <th scope="col">Pengaturan<span class="sort-icon">▲▼</span></th>
                 </tr>
             </thead>            
@@ -138,27 +138,43 @@
         }
         setInterval(updateTime, 1000);
 
-        function updateEntries() {
-            var select = document.getElementById('entries');
-            var table = document.getElementById('studentTable');
-            var totalEntries = table.rows.length - 1;
-            var firstEntry = 1;
-            var lastEntry = totalEntries;
-            var info = "Showing " + firstEntry + " to " + lastEntry + " of " + totalEntries + " entries";
-            document.getElementById('entryInfo').innerText = info;
-
-            while (select.firstChild) {
-                select.removeChild(select.firstChild);
+        function sortTable(n, tableId) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById(tableId);
+            switching = true;
+            dir = "asc"; 
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
             }
-            
-            for (var i = 1; i <= totalEntries; i++) {
-                var option = document.createElement('option');
-                option.value = i;
-                option.text = i;
-                select.appendChild(option);
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;      
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
             }
-            select.value = totalEntries;
         }
+    }
+
         function showAddAlert() {
             var alertBox = document.getElementById('addSuccessAlert');
             alertBox.removeAttribute('hidden');
